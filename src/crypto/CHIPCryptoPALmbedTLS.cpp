@@ -1172,11 +1172,19 @@ CHIP_ERROR Spake2p_P256_SHA256_HKDF_HMAC::PointMul(void * R, const void * P1, co
 CHIP_ERROR Spake2p_P256_SHA256_HKDF_HMAC::PointAddMul(void * R, const void * P1, const void * fe1, const void * P2,
                                                       const void * fe2)
 {
+	int rc;
+	    ChipLogError(Crypto, "KKK: using mbedtls PointAddmul");
+
     Spake2p_Context * context = to_inner_spake2p_context(&mSpake2pContext);
 
-    if (mbedtls_ecp_muladd(&context->curve, (mbedtls_ecp_point *) R, (const mbedtls_mpi *) fe1, (const mbedtls_ecp_point *) P1,
-                           (const mbedtls_mpi *) fe2, (const mbedtls_ecp_point *) P2) != 0)
+
+    rc = mbedtls_ecp_muladd(&context->curve, (mbedtls_ecp_point *) R, (const mbedtls_mpi *) fe1, (const mbedtls_ecp_point *) P1,
+                           (const mbedtls_mpi *) fe2, (const mbedtls_ecp_point *) P2);
+    if (rc != 0)
     {
+    	// I bet we're actually seeing MBEDTLS_ERR_MPI_ALLOC_FAILED not MBEDTLS_ERR_ECP_INVALID_KEY here....
+    	_log_mbedTLS_error(rc);
+	ChipLogError(Crypto, "KKK: lol mbed failed, rc: %d", rc);
         return CHIP_ERROR_INTERNAL;
     }
 
