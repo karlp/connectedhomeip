@@ -51,6 +51,7 @@ Button resetButton;
 Button lockButton;
 
 BaseType_t sAppTaskHandle;
+BaseType_t khandle;
 QueueHandle_t sAppEventQueue;
 
 bool sHaveBLEConnections = false;
@@ -62,6 +63,39 @@ using namespace ::chip::DeviceLayer;
 using namespace ::chip::System;
 
 AppTask AppTask::sAppTask;
+
+#define KTAG "ktask"
+
+void kMain(void * pvParameter)
+{
+#if 0
+	gpio_num_t gp = (gpio_num_t)14;
+	    //zero-initialize the config structure.
+    gpio_config_t io_conf = {};
+    //disable interrupt
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    //set as output mode
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    //bit mask of the pins that you want to set,e.g.GPIO18/19
+    io_conf.pin_bit_mask = gp;
+    //disable pull-down mode
+    io_conf.pull_down_en = (gpio_pulldown_t)0;
+    //disable pull-up mode
+    //io_conf.pull_up_en = 0;
+    //configure GPIO with the given settings
+    gpio_config(&io_conf);
+
+#endif
+	int cnt = 0;
+	ESP_LOGI(KTAG, "started hoho");
+	const TickType_t xDelay = 500 / portTICK_PERIOD_MS;
+	while(true) {
+		ESP_LOGI(KTAG, "cnt: %d", cnt++);
+		vTaskDelay(xDelay);
+		//gpio_set_level(gp, cnt % 2);
+	}
+
+}
 
 CHIP_ERROR AppTask::StartAppTask()
 {
@@ -124,6 +158,15 @@ void AppTask::AppTaskMain(void * pvParameter)
     }
 
     ESP_LOGI(TAG, "App Task started");
+
+    ESP_LOGI(TAG, "creating second task");
+
+    khandle = xTaskCreate(kMain, "kmain", 3000, NULL, 2, NULL);
+    if (khandle) {
+	    ESP_LOGI(KTAG, "created task ok..: %x\n", khandle);
+    } else {
+	    ESP_LOGE(TAG, "failed task create..: %x\n", khandle);
+    }
 
     while (true)
     {
