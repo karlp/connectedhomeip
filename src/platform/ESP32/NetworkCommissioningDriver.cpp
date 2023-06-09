@@ -231,6 +231,7 @@ void ESPWiFiDriver::ConnectNetwork(ByteSpan networkId, ConnectCallback * callbac
     VerifyOrExit(mpConnectCallback == nullptr, networkingStatus = Status::kUnknownError);
     ChipLogProgress(NetworkProvisioning, "ESP NetworkCommissioningDelegate: SSID: %.*s", static_cast<int>(networkId.size()),
                     networkId.data());
+    // KARL - somewhere right about here, we need to tell micropython that we're taking over....
     if (CHIP_NO_ERROR == GetConfiguredNetwork(configuredNetwork))
     {
         if (NetworkMatch(mStagingNetwork, ByteSpan(configuredNetwork.networkID, configuredNetwork.networkIDLen)))
@@ -346,6 +347,8 @@ void ESPWiFiDriver::OnNetworkStatusChange()
     bool staEnabled = false, staConnected = false;
     VerifyOrReturn(ESP32Utils::IsStationEnabled(staEnabled) == CHIP_NO_ERROR);
     VerifyOrReturn(staEnabled && mpStatusChangeCallback != nullptr);
+    /// KARL - we're hitting here too, it fails to connect, then failshere...
+    /// we're hitting here with just "esp_err_wifi_not_connect" (duh, we failed to connect, can't get network info...
     CHIP_ERROR err = GetConfiguredNetwork(configuredNetwork);
     if (err != CHIP_NO_ERROR)
     {

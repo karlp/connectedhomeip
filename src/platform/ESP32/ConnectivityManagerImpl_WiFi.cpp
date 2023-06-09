@@ -626,6 +626,7 @@ void ConnectivityManagerImpl::DriveStationState()
         // If the WiFi station interface is now enabled and provisioned (and by implication,
         // not presently under application control), AND the system is not in the process of
         // scanning, then...
+	// FIXME - karl - this is another place where micropython might have it's hands on the wheel...
         if (mWiFiStationMode == kWiFiStationMode_Enabled && IsWiFiStationProvisioned())
         {
             // Initiate a connection to the AP if we haven't done so before, or if enough
@@ -770,6 +771,7 @@ void ConnectivityManagerImpl::ChangeWiFiStationState(WiFiStationState newState)
 {
     if (mWiFiStationState != newState)
     {
+	    // KARL - we keep calling this, which then reports errors...
         ChipLogProgress(DeviceLayer, "WiFi station state change: %s -> %s", WiFiStationStateToStr(mWiFiStationState),
                         WiFiStationStateToStr(newState));
         mWiFiStationState = newState;

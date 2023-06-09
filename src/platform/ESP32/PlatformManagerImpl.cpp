@@ -80,6 +80,7 @@ CHIP_ERROR PlatformManagerImpl::_InitChipStack(void)
     err = esp_event_loop_create_default();
     if (err != ESP_OK)
     {
+	    ESP_LOGE("KKK", "chip failed to event loop create default! %d", err);
         goto exit;
     }
 
@@ -167,6 +168,7 @@ void PlatformManagerImpl::HandleESPSystemEvent(void * arg, esp_event_base_t even
     event.Platform.ESPSystemEvent.Id   = eventId;
     if (eventBase == IP_EVENT)
     {
+	    ESP_LOGD("KKK", "chip:ip ev:%d", eventId);
         switch (eventId)
         {
         case IP_EVENT_STA_GOT_IP:
@@ -185,6 +187,7 @@ void PlatformManagerImpl::HandleESPSystemEvent(void * arg, esp_event_base_t even
     }
     else if (eventBase == WIFI_EVENT)
     {
+	    ESP_LOGD("KKK", "chip:wifi ev:%d", eventId);
         switch (eventId)
         {
         case WIFI_EVENT_SCAN_DONE:
