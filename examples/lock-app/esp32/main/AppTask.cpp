@@ -71,7 +71,7 @@ CHIP_ERROR AppTask::StartAppTask()
     }
 
     // Start App task.
-    sAppTaskHandle = xTaskCreate(AppTaskMain, APP_TASK_NAME, ArraySize(appStack), NULL, 1, NULL);
+    sAppTaskHandle = xTaskCreate(AppTaskMain, APP_TASK_NAME, ArraySize(appStack), NULL, APP_TASK_PRIORITY, NULL);
     return sAppTaskHandle ? CHIP_NO_ERROR : APP_ERROR_CREATE_TASK_FAILED;
 }
 
