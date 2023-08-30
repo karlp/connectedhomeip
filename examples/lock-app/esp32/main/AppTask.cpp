@@ -36,7 +36,6 @@
 #define APP_EVENT_QUEUE_SIZE 10
 #define APP_TASK_STACK_SIZE (3000)
 #define APP_TASK_PRIORITY 2
-#define STATUS_LED_GPIO_NUM GPIO_NUM_2 // Use LED1 (blue LED) as status LED on DevKitC
 
 static const char * const TAG = "lock-app";
 
