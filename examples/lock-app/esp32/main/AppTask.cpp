@@ -464,12 +464,15 @@ void AppTask::DispatchEvent(AppEvent * aEvent)
 /* if unlocked then it locked it first*/
 void AppTask::UpdateClusterState(intptr_t context)
 {
-    uint8_t newValue = !BoltLockMgr().IsUnlocked();
+    bool unlocked = BoltLockMgr().IsUnlocked();
+    using namespace chip::app::Clusters::DoorLock;
+    DlLockState newValue = unlocked ? DlLockState::kUnlocked : DlLockState::kLocked;
 
-    // write the new on/off value
-    EmberAfStatus status = chip::app::Clusters::OnOff::Attributes::OnOff::Set(1, newValue);
+    OperationSourceEnum source = OperationSourceEnum::kUnspecified;
+    EmberAfStatus status = DoorLockServer::Instance().SetLockState(1, newValue, source) ? EMBER_ZCL_STATUS_SUCCESS : EMBER_ZCL_STATUS_FAILURE;
+
     if (status != EMBER_ZCL_STATUS_SUCCESS)
     {
-        ESP_LOGI(TAG, "ERR: updating on/off %x", status);
+        ESP_LOGI(TAG, "ERR: updating lock state %x", status);
     }
 }
